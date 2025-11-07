@@ -1,39 +1,55 @@
-# AHP Practice
+# ⚖️ AHP Practice — Lightweight Analytic Hierarchy Process Server
 
-Lightweight AHP (Analytic Hierarchy Process) server. POST a decision problem to the endpoint to compute priority vectors and consistency metrics.
+A simple **REST API** that computes **priority vectors** and **consistency metrics** for decision-making problems using the **Analytic Hierarchy Process (AHP)** and **geometric mean** method.
 
-## Files
-- [index.js](index.js)
-- [package.json](package.json)
-- [src/utils/ahs.js](src/utils/ahs.js)
-- [src/utils/computeConsistancyRatio.js](src/utils/computeConsistancyRatio.js)
-- [src/utils/computePriorityVector.js](src/utils/computePriorityVector.js) — contains the geometric-mean implementation [`weightVectorGeometricMean`](src/utils/computePriorityVector.js)
-- [src/utils/pairwiseMatrix.js](src/utils/pairwiseMatrix.js)
-- [src/utils/validateMatrix.js](src/utils/validateMatrix.js)
+---
 
-## Quick start
+## 📂 Project Structure
 
-1. Install dependencies:
-```sh
-npm install
-```
+| File                                     | Description                                                     |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| **index.js**                             | Entry point — sets up the Express server and routes.            |
+| **package.json**                         | Defines dependencies and scripts.                               |
+| **src/utils/ahs.js**                     | Core logic for AHP computation orchestration.                   |
+| **src/utils/computeConsistancyRatio.js** | Calculates consistency ratio (CR) and λ<sub>max</sub>.          |
+| **src/utils/computePriorityVector.js**   | Implements geometric mean method → `weightVectorGeometricMean`. |
+| **src/utils/pairwiseMatrix.js**          | Builds pairwise comparison matrices.                            |
+| **src/utils/validateMatrix.js**          | Validates reciprocity and dimension correctness.                |
 
-2. Start the server:
-```sh
-npm start
-# or
-node index.js
-```
+---
 
-The API listens on the base URL used by the project (example below uses port 5000).
+## 🚀 Quick Start
 
-## API
+1. **Install dependencies**
 
-POST http://localhost:5000/api/v1/ahp
+   ```bash
+   npm install
+   ```
 
-Content-Type: application/json
+2. **Run the server**
 
-Request body format:
+   ```bash
+   npm start
+   # or
+   node index.js
+   ```
+
+3. **Access the API**
+
+   ```
+   http://localhost:5000/api/v1/ahp
+   ```
+
+---
+
+## 🔗 API Endpoint
+
+### **POST** `/api/v1/ahp`
+
+**Content-Type:** `application/json`
+
+#### 🧩 Request body format
+
 ```json
 {
   "criteriaNames": ["Experience", "Technical Skill", "Communication", "Compensation Fit"],
@@ -47,25 +63,53 @@ Request body format:
 }
 ```
 
-Example curl:
-```sh
+#### 🧠 Example (curl)
+
+```bash
 curl -X POST http://localhost:5000/api/v1/ahp \
   -H "Content-Type: application/json" \
   -d @sample.json
 ```
 
-## What it computes
+---
 
-- Criteria/alternative priority vectors using the geometric mean method implemented in [`weightVectorGeometricMean`](src/utils/computePriorityVector.js).
-- Consistency metrics via [`src/utils/computeConsistancyRatio.js`](src/utils/computeConsistancyRatio.js).
-- Input validation via [`src/utils/validateMatrix.js`](src/utils/validateMatrix.js) and pairwise matrix utilities in [`src/utils/pairwiseMatrix.js`](src/utils/pairwiseMatrix.js).
+## 🧮 What It Computes
 
-Geometric mean formula used:
-$g_i = \left(\prod_{j=1}^n a_{ij}\right)^{1/n}$
+| Computation                | Description                                                           |
+| -------------------------- | --------------------------------------------------------------------- |
+| **Priority Vectors**       | Derived from pairwise matrices using the **Geometric Mean** method.   |
+| **Consistency Ratio (CR)** | Ensures judgments are logically consistent (`CR < 0.1` = acceptable). |
+| **Normalization**          | Weights are normalized so ∑wᵢ = 1.                                    |
 
-Normalized priority:
-$$w_i = \frac{g_i}{\sum_{k=1}^n g_k}$$
+### Geometric Mean Formula
 
-## Notes
-- Ensure `dataMatrix` rows correspond to items being compared and that the matrix is positive and reciprocal where required.
-- See [src/utils/ahs.js](src/utils/ahs.js) and [index.js](index.js) for the exact request/response wiring.
+[
+g_i = \left(\prod_{j=1}^{n} a_{ij}\right)^{1/n}
+]
+
+### Normalized Priority
+
+[
+w_i = \frac{g_i}{\sum_{k=1}^{n} g_k}
+]
+
+---
+
+## 🧾 Notes
+
+* Ensure `dataMatrix` rows correspond to **alternatives** being compared.
+* Matrices must be **positive** and **reciprocal** when applicable.
+* See implementation details in:
+
+  * [`src/utils/ahs.js`](src/utils/ahs.js)
+  * [`index.js`](index.js)
+
+---
+
+## 🧰 Tech Stack
+
+* **Node.js** + **Express.js**
+* **Math.js** for matrix operations
+* **Modular utility functions** for validation and computation
+
+
